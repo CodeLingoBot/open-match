@@ -340,7 +340,7 @@ func submitJob(clientset *kubernetes.Clientset, jobType string, jobName string, 
 
 	// DEPRECATED: will be removed in a future vrsion.  Please switch to using the 'MMF_*' environment variables.
 	v := strings.Split(jobName, ".")
-	envvars = append(envvars, apiv1.EnvVar{Name: "PROFILE", Value: strings.Join(v[:len(v)-1], ".")})
+	innerenvvars = append(innerenvvars, apiv1.EnvVar{Name: "PROFILE", Value: strings.Join(v[:len(v)-1], ".")})
 
 	job := &batchv1.Job{
 		ObjectMeta: metav1.ObjectMeta{
@@ -368,7 +368,7 @@ func submitJob(clientset *kubernetes.Clientset, jobType string, jobName string, 
 							Name:            jobType,
 							Image:           imageName,
 							ImagePullPolicy: "Always",
-							Env:             envvars,
+							Env:             innerenvvars,
 						},
 					},
 				},

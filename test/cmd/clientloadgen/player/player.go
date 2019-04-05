@@ -135,12 +135,12 @@ func New() {
 // That should be abstracted out of this level and into the db storage module
 func Generate() (Xid string, properties map[string]int, debug map[string]string) {
 	//return Xid, properties, debug
-	Xid = xid.New().String()
-	properties = make(map[string]int)
-	debug = make(map[string]string)
+	innerXid = xid.New().String()
+	innerproperties = make(map[string]int)
+	innerdebug = make(map[string]string)
 
 	city := pick()
-	debug["city"] = city
+	innerdebug["city"] = city
 	//fmt.Println("Chose city", city)
 
 	//m := [4]string{"avg", "min", "max", "std"}
@@ -161,16 +161,16 @@ func Generate() (Xid string, properties map[string]int, debug map[string]string)
 	}
 	// Insert other properties here
 	// For example, a random skill modeled on a normal distribution
-	properties["mmr.rating"] = normalDist(1500, -1000, 4000, 350)
+	innerproperties["mmr.rating"] = normalDist(1500, -1000, 4000, 350)
 
 	// For properties that are just flags, the key is the important bit.
 	// It's existance denotes a boolean true value.
 	// Just use an epoch timestamp as the value.
 	now := int(time.Now().Unix())
-	properties["char.paladin"] = now
-	properties["map.eastworld"] = now
-	properties["mode.ctf"] = now
-	properties["timestamp.enter"] = now
+	innerproperties["char.paladin"] = now
+	innerproperties["map.eastworld"] = now
+	innerproperties["mode.ctf"] = now
+	innerproperties["timestamp.enter"] = now
 
 	return
 }

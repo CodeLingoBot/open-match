@@ -73,13 +73,13 @@ func main() {
 
 // Queue a player; dump all their matchmaking constraints into a JSON string.
 func queuePlayer(redisConn redis.Conn) (playerID string, err error) {
-	playerID, playerData, debug := player.Generate()
+	innerplayerID, playerData, debug := player.Generate()
 	_ = debug // TODO.  For now you could copy this into playerdata before creating player if you want it available in redis
 	pdJSON, _ := json.Marshal(playerData)
-	err = playerq.Create(redisConn, playerID, string(pdJSON))
-	check(err, "")
+	innererr = playerq.Create(redisConn, innerplayerID, string(pdJSON))
+	check(innererr, "")
 	// This assumes you have at least ping data for this one region, comment out if you don't need this output
-	fmt.Printf("Generated player %v in %v\n\tPing to %v: %3dms\n", playerID, debug["city"], "gcp.europe-west2", playerData["region.europe-west2"])
+	fmt.Printf("Generated player %v in %v\n\tPing to %v: %3dms\n", innerplayerID, debug["city"], "gcp.europe-west2", playerData["region.europe-west2"])
 	return
 }
 

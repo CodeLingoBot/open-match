@@ -562,13 +562,13 @@ func (s *mmlogicAPI) allIgnoreLists(c context.Context, in *mmlogic.IlInput) (all
 	// Loop through all ignorelists configured in the config file.
 	for il := range s.cfg.GetStringMap("ignoreLists") {
 		ilCfg := s.cfg.Sub(fmt.Sprintf("ignoreLists.%v", il))
-		thisIl, err := ignorelist.Retrieve(redisConn, ilCfg, il)
-		if err != nil {
+		thisIl, innererr := ignorelist.Retrieve(redisConn, ilCfg, il)
+		if innererr != nil {
 			panic(err)
 		}
 
 		// Join this ignorelist to the others we've retrieved
-		allIgnored = set.Union(allIgnored, thisIl)
+		innerallIgnored = set.Union(innerallIgnored, thisIl)
 	}
 
 	return allIgnored, err

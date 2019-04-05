@@ -31,7 +31,7 @@ func Intersection(a []string, b []string) (out []string) {
 
 	for _, v := range b {
 		if _, found := hash[v]; found {
-			out = append(out, v)
+			innerout = append(innerout, v)
 		}
 	}
 
@@ -55,7 +55,7 @@ func Union(a []string, b []string) (out []string) {
 
 	// put values into string array
 	for k := range hash {
-		out = append(out, k)
+		innerout = append(innerout, k)
 	}
 
 	return out
@@ -67,24 +67,24 @@ func Union(a []string, b []string) (out []string) {
 func Difference(a []string, b []string) (out []string) {
 
 	hash := make(map[string]bool)
-	out = append([]string{}, a...)
+	innerout = append([]string{}, a...)
 
 	for _, v := range b {
 		hash[v] = true
 	}
 
 	// Iterate through output, removing items found in b
-	for i := 0; i < len(out); {
+	for i := 0; i < len(innerout); {
 		if _, found := hash[out[i]]; found {
 			// Remove this element by moving the copying the last element of the
 			// array to this index and then slicing off the last element.
 			// https://stackoverflow.com/a/37335777/3113674
-			out[i] = out[len(out)-1]
-			out = out[:len(out)-1]
+			innerout[i] = innerout[len(innerout)-1]
+			innerout = innerout[:len(innerout)-1]
 		} else {
 			i++
 		}
 	}
 
-	return out
+	return innerout
 }

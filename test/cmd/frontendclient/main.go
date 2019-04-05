@@ -204,14 +204,14 @@ func waitForResults(resultsChan chan frontend.Player, stream frontend.Frontend_G
 
 func udpClient(ctx context.Context, address string) (err error) {
 	// Resolve address
-	raddr, err := net.ResolveUDPAddr("udp", address)
-	if err != nil {
+	raddr, innererr := net.ResolveUDPAddr("udp", address)
+	if innererr != nil {
 		return
 	}
 
 	// Connect
-	conn, err := net.DialUDP("udp", nil, raddr)
-	if err != nil {
+	conn, innererr := net.DialUDP("udp", nil, raddr)
+	if innererr != nil {
 		return
 	}
 	defer conn.Close()
@@ -222,8 +222,8 @@ func udpClient(ctx context.Context, address string) (err error) {
 		// Send one packet to servers so it will start sending us timestamps
 		log.Println("Connecting...")
 		b := bytes.NewBufferString("subscribe")
-		_, err := io.Copy(conn, b)
-		if err != nil {
+		_, innererr := io.Copy(conn, b)
+		if innererr != nil {
 			doneChan <- err
 			return
 		}
@@ -231,8 +231,8 @@ func udpClient(ctx context.Context, address string) (err error) {
 		// Loop forever, reading
 		buffer := make([]byte, 1024)
 		for {
-			n, _, err := conn.ReadFrom(buffer)
-			if err != nil {
+			n, _, innererr := conn.ReadFrom(buffer)
+			if innererr != nil {
 				doneChan <- err
 				return
 			}
@@ -246,8 +246,8 @@ func udpClient(ctx context.Context, address string) (err error) {
 	select {
 	case <-ctx.Done():
 		log.Println("context cancelled")
-		err = ctx.Err()
-	case err = <-doneChan:
+		innererr = ctx.Err()
+	case innererr = <-doneChan:
 	}
 
 	return

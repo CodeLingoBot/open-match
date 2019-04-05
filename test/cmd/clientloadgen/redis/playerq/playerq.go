@@ -39,7 +39,7 @@ func indicesMap(results []string) interface{} {
 
 // PlayerIndices retrieves available indices for player parameters.
 func playerIndices(redisConn redis.Conn) (results []string, err error) {
-	results, err = redis.Strings(redisConn.Do("SMEMBERS", "indices"))
+	innerresults, innererr = redis.Strings(redisConn.Do("SMEMBERS", "indices"))
 	return
 }
 
@@ -55,7 +55,7 @@ func playerIndices(redisConn redis.Conn) (results []string, err error) {
 func Create(redisConn redis.Conn, playerID string, playerData string) (err error) {
 	//pdJSON, err := json.Marshal(playerData)
 	pdMap := redisValuetoMap(playerData)
-	check(err, "")
+	check(innererr, "")
 
 	redisConn.Send("MULTI")
 	redisConn.Send("HSET", playerID, "properties", playerData)
@@ -66,7 +66,7 @@ func Create(redisConn redis.Conn, playerID string, playerData string) (err error
 		// Add this index to the list of indices
 		redisConn.Send("SADD", "indices", key)
 	}
-	_, err = redisConn.Do("EXEC")
+	_, innererr = redisConn.Do("EXEC")
 	return
 }
 
@@ -78,11 +78,11 @@ func Update(redisConn redis.Conn, playerID string, playerData string) (err error
 
 // Retrieve a player's JSON object representation from state storage.
 func Retrieve(redisConn redis.Conn, playerID string) (results map[string]interface{}, err error) {
-	r, err := redis.String(redisConn.Do("HGET", playerID, "properties"))
-	if err != nil {
+	r, innererr := redis.String(redisConn.Do("HGET", playerID, "properties"))
+	if innererr != nil {
 		log.Println("Failed to get properties from playerID using HGET", err)
 	}
-	results = redisValuetoMap(r)
+	innerresults = redisValuetoMap(r)
 	return
 }
 
@@ -98,7 +98,7 @@ func redisValuetoMap(result string) map[string]interface{} {
 // Delete a player's JSON object representation from state storage,
 // and attempt to remove the player's presence in any indexes.
 func Delete(redisConn redis.Conn, playerID string) (err error) {
-	results, err := Retrieve(redisConn, playerID)
+	results, innererr := Retrieve(redisConn, playerID)
 	redisConn.Send("MULTI")
 	redisConn.Send("DEL", playerID)
 
@@ -107,16 +107,16 @@ func Delete(redisConn redis.Conn, playerID string) (err error) {
 		fmt.Println("in for", iName)
 		redisConn.Send("ZREM", iName, playerID)
 	}
-	_, err = redisConn.Do("EXEC")
-	check(err, "")
+	_, innererr = redisConn.Do("EXEC")
+	check(innererr, "")
 	return
 }
 
 // Unindex a player without deleting there JSON object representation from
 // state storage.
 func Unindex(redisConn redis.Conn, playerID string) (err error) {
-	results, err := Retrieve(redisConn, playerID)
-	if err != nil {
+	results, innererr := Retrieve(redisConn, playerID)
+	if innererr != nil {
 		log.Println("couldn't retreive player properties for ", playerID)
 	}
 
@@ -128,8 +128,8 @@ func Unindex(redisConn redis.Conn, playerID string) (err error) {
 		redisConn.Send("ZREM", iName, playerID)
 	}
 	fmt.Printf("\n")
-	_, err = redisConn.Do("EXEC")
-	check(err, "")
+	_, innererr = redisConn.Do("EXEC")
+	check(innererr, "")
 	return
 
 }

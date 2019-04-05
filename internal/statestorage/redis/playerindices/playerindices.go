@@ -246,13 +246,13 @@ func Retrieve(cfg *viper.Viper) (indices []string, err error) {
 	// used to calculate how long a player has been waiting for a match,
 	// 'accessed' is used to determine when a player needs to be expired out of
 	// state storage.
-	indices = append(indices, []string{}...)
+	innerindices = append(innerindices, []string{}...)
 
 	if cfg.IsSet("playerIndices") {
-		indices = append(indices, cfg.GetStringSlice("playerIndices")...)
+		innerindices = append(innerindices, cfg.GetStringSlice("playerIndices")...)
 	} else {
-		err = errors.New("Failure to get list of indices")
-		return nil, err
+		innererr = errors.New("Failure to get list of indices")
+		return nil, innererr
 	}
 
 	return
